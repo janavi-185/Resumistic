@@ -1,4 +1,3 @@
-import Navbar from "@/components/shared/navbar"
 export default function Layout({
     children,
 }: {
@@ -6,7 +5,6 @@ export default function Layout({
 }) {
     return (
         <div>
-            <Navbar />
             {children}
         </div>
     )

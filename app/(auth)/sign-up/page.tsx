@@ -15,11 +15,9 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { useAuth } from '@/contexts/AuthContext'
 
 const SignUpPage = () => {
     const router = useRouter()
-    const { signup } = useAuth()
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
@@ -35,8 +33,9 @@ const SignUpPage = () => {
         setLoading(true)
 
         try {
-            await signup(formData.email, formData.username, formData.password)
-            router.push('/') // Redirect to home after successful signup
+            // signup logic removed
+            console.log('SignUp submitted:', formData)
+            // router.push('/') // Redirect to home after successful signup (disabled)
         } catch (err: any) {
             setError(err.message || 'Signup failed')
         } finally {

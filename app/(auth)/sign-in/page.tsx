@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
-import SocialAuth from '@/components/auth/social-auth'
+// import SocialAuth from '@/components/auth/social-auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -15,11 +15,9 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { useAuth } from '@/contexts/AuthContext'
 
 const SignInPage = () => {
     const router = useRouter()
-    const { signin } = useAuth()
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
@@ -34,8 +32,9 @@ const SignInPage = () => {
         setLoading(true)
 
         try {
-            await signin(formData.emailOrUsername, formData.password)
-            router.push('/') // Redirect to home after successful signin
+            // signin logic removed
+            console.log('SignIn submitted:', formData)
+            // router.push('/') // Redirect to home after successful signin (disabled)
         } catch (err: any) {
             setError(err.message || 'Signin failed')
         } finally {
