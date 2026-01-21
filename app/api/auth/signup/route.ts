@@ -19,7 +19,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // Check if user already exists
     const { data: existingUsers } = await supabase
       .from("users")
       .select("id")
