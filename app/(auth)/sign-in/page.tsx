@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
+import { signIn } from 'next-auth/react'
 // import SocialAuth from '@/components/auth/social-auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,11 +33,20 @@ const SignInPage = () => {
         setLoading(true)
 
         try {
-            // signin logic removed
-            console.log('SignIn submitted:', formData)
-            // router.push('/') // Redirect to home after successful signin (disabled)
+            const result = await signIn('credentials', {
+                email: formData.emailOrUsername,
+                password: formData.password,
+                redirect: false,
+            })
+
+            if (result?.error) {
+                setError('Invalid email or password')
+            } else {
+                router.push('/dashboard')
+                router.refresh()
+            }
         } catch (err: any) {
-            setError(err.message || 'Signin failed')
+            setError(err.message || 'Sign in failed')
         } finally {
             setLoading(false)
         }

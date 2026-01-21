@@ -5,7 +5,8 @@ import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import SocialAuth from '@/components/auth/social-auth'
+import { signIn } from 'next-auth/react'
+// import SocialAuth from '@/components/auth/social-auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -33,15 +34,44 @@ const SignUpPage = () => {
         setLoading(true)
 
         try {
-            // signup logic removed
-            console.log('SignUp submitted:', formData)
-            // router.push('/') // Redirect to home after successful signup (disabled)
+            // Create user account
+            const signupResponse = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password,
+                    username: formData.username,
+                }),
+            })
+
+            const signupData = await signupResponse.json()
+
+            if (!signupResponse.ok) {
+                setError(signupData.error || 'Failed to create account')
+                return
+            }
+
+            // Automatically sign in after successful signup
+            const result = await signIn('credentials', {
+                email: formData.email,
+                password: formData.password,
+                redirect: false,
+            })
+
+            if (result?.error) {
+                setError('Account created but sign in failed. Please try signing in.')
+            } else {
+                router.push('/dashboard')
+                router.refresh()
+            }
         } catch (err: any) {
-            setError(err.message || 'Signup failed')
+            setError(err.message || 'Sign up failed')
         } finally {
             setLoading(false)
         }
     }
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
