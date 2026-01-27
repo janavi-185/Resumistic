@@ -9,6 +9,9 @@ import { cn } from '@/lib/utils'
 const ResumeUpload = () => {
     const [file, setFile] = useState<File | null>(null)
     const [isAnalyzing, setIsAnalyzing] = useState(false)
+    const [analysisResult, setAnalysisResult] = useState<any>(null)
+    const [error, setError] = useState<string | null>(null)
+
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
@@ -26,11 +29,36 @@ const ResumeUpload = () => {
         multiple: false
     })
 
-    const handleAnalyze = () => {
+    const handleAnalyze = async () => {
+        if (!file) return
+
         setIsAnalyzing(true)
-        // Simulate analysis
-        setTimeout(() => setIsAnalyzing(false), 3000)
-    }
+        setError(null)
+        setAnalysisResult(null)
+
+        try {
+            const formData = new FormData()
+            formData.append("resume", file)
+
+            const res = await fetch("/api/resume/analyze", {
+            method: "POST",
+            body: formData,
+            })
+
+            if (!res.ok) {
+            throw new Error("Failed to analyze resume")
+            }
+
+            const data = await res.json()
+            setAnalysisResult(data.analysis)
+        } catch (err) {
+            console.error(err)
+            setError("Something went wrong while analyzing your resume.")
+        } finally {
+            setIsAnalyzing(false)
+        }
+        }
+
 
     return (
         <div className="max-w-4xl mx-auto py-12 px-4">
@@ -128,6 +156,74 @@ const ResumeUpload = () => {
                                 </>
                             )}
                         </button>
+
+                        {/* TEMP ANALYSIS RESULT  */}
+                    {analysisResult && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-8 p-6 rounded-2xl border border-border bg-muted/40"
+                        >
+                            <h3 className="text-lg font-semibold mb-4">AI Resume Analysis</h3>
+                            
+                            {/* Rating */}
+                            {analysisResult.rating && (
+                                <div className="mb-4 p-4 rounded-xl bg-primary/10 border border-primary/20">
+                                    <p className="text-sm font-medium text-muted-foreground mb-1">Overall Rating</p>
+                                    <p className="text-2xl font-bold text-primary">{analysisResult.rating}/10</p>
+                                </div>
+                            )}
+
+                            {/* Summary */}
+                            {analysisResult.summary && (
+                                <div className="mb-4">
+                                    <h4 className="font-semibold mb-2">Summary</h4>
+                                    <p className="text-sm text-muted-foreground">{analysisResult.summary}</p>
+                                </div>
+                            )}
+
+                            {/* Strengths */}
+                            {analysisResult.strengths && analysisResult.strengths.length > 0 && (
+                                <div className="mb-4">
+                                    <h4 className="font-semibold mb-2">Key Strengths</h4>
+                                    <ul className="list-disc list-inside space-y-1">
+                                        {analysisResult.strengths.map((strength: string, idx: number) => (
+                                            <li key={idx} className="text-sm text-muted-foreground">{strength}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Areas for Improvement */}
+                            {analysisResult.improvements && analysisResult.improvements.length > 0 && (
+                                <div className="mb-4">
+                                    <h4 className="font-semibold mb-2">Areas for Improvement</h4>
+                                    <ul className="list-disc list-inside space-y-1">
+                                        {analysisResult.improvements.map((improvement: string, idx: number) => (
+                                            <li key={idx} className="text-sm text-muted-foreground">{improvement}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Suggestions */}
+                            {analysisResult.suggestions && analysisResult.suggestions.length > 0 && (
+                                <div>
+                                    <h4 className="font-semibold mb-2">Suggestions</h4>
+                                    <ul className="list-disc list-inside space-y-1">
+                                        {analysisResult.suggestions.map((suggestion: string, idx: number) => (
+                                            <li key={idx} className="text-sm text-muted-foreground">{suggestion}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+                    {error && (
+                        <p className="mt-4 text-sm text-destructive text-center">
+                            {error}
+                        </p>
+                    )}
                     </div>
                 </motion.div>
             )}
