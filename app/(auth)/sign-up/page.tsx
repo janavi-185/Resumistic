@@ -65,8 +65,8 @@ const SignUpPage = () => {
                 router.push('/dashboard')
                 router.refresh()
             }
-        } catch (err: any) {
-            setError(err.message || 'Sign up failed')
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Sign up failed')
         } finally {
             setLoading(false)
         }

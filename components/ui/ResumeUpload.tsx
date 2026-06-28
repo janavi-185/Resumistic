@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 const ResumeUpload = () => {
     const [file, setFile] = useState<File | null>(null)
     const [isAnalyzing, setIsAnalyzing] = useState(false)
-    const [analysisResult, setAnalysisResult] = useState<any>(null)
+    const [analysisResult, setAnalysisResult] = useState<{ rating?: number; summary?: string; strengths?: string[]; improvements?: string[]; suggestions?: string[] } | null>(null)
     const [error, setError] = useState<string | null>(null)
 
 

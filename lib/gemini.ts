@@ -10,8 +10,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
  */
 export async function analyzeResume(resumeText: string) {
   try {
-    // Get the generative model (using gemini-1.5-flash as gemini-pro is deprecated)
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // Get the generative model (using gemini-1.5-flash)
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Create a prompt for resume analysis
     const prompt = `
@@ -41,8 +41,11 @@ export async function analyzeResume(resumeText: string) {
 
     // Try to parse as JSON, fallback to raw text if parsing fails
     try {
-      return JSON.parse(text);
-    } catch {
+      // Clean the response text from potential markdown formatting
+      const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+      return JSON.parse(cleanedText);
+    } catch (parseError) {
+      console.error("Failed to parse Gemini response as JSON:", parseError);
       return {
         summary: text,
         strengths: [],

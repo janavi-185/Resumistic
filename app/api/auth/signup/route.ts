@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { supabase } from "@/lib/supabase"
 import bcrypt from "bcryptjs"
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 export async function POST(request: Request) {
   try {
-    const { email, password, username } = await request.json()
+    const body = await request.json()
+    const { email, password, username } = body
+    console.log("Signup Request:", { email, username, passwordLength: password?.length })
 
     // Validate input
     if (!email || !password) {
@@ -19,11 +16,19 @@ export async function POST(request: Request) {
       )
     }
 
-    const { data: existingUsers } = await supabase
+    const { data: existingUsers, error: selectError } = await supabase
       .from("users")
       .select("id")
       .eq("email", email)
       .limit(1)
+
+    if (selectError) {
+      console.error("Supabase Select Error:", selectError)
+      return NextResponse.json(
+        { error: "Database connection failed", details: selectError.message },
+        { status: 500 }
+      )
+    }
 
     if (existingUsers && existingUsers.length > 0) {
       return NextResponse.json(
@@ -43,16 +48,19 @@ export async function POST(request: Request) {
           email,
           password: hashedPassword,
           username: username || email.split("@")[0],
-          created_at: new Date().toISOString(),
         },
       ])
       .select()
       .single()
 
     if (error) {
-      console.error("Supabase error:", error)
+      console.error("Supabase User Creation Error:", error)
       return NextResponse.json(
-        { error: "Failed to create user" },
+        { 
+          error: "Failed to create user", 
+          details: error.message,
+          code: error.code
+        },
         { status: 500 }
       )
     }

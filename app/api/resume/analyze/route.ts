@@ -21,10 +21,10 @@ export async function POST(req: Request) {
       success: true,
       analysis,
     });
-  } catch (error) {
-    console.error(error);
+  } catch (error: unknown) {
+    console.error("API Error in /api/resume/analyze:", error);
     return NextResponse.json(
-      { error: "Resume analysis failed" },
+      { error: "Resume analysis failed", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

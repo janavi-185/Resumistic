@@ -4,6 +4,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const Hero = () => {
     return (
@@ -70,26 +71,33 @@ const Hero = () => {
                     </div>
                 </motion.div>
 
-                {/* Dashboard Preview Placeholder */}
+                {/* Dashboard Preview */}
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.2 }}
                     className="mt-20 relative max-w-5xl mx-auto"
                 >
-                    <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-2 shadow-2xl">
-                        <div className="bg-background rounded-xl overflow-hidden aspect-video relative group">
-                            <img
-                                src="https://images.unsplash.com/photo-1517245385169-d39139a4603c?auto=format&fit=crop&q=80&w=2070"
-                                alt="Dashboard Preview"
-                                className="object-cover w-full h-full opacity-60 group-hover:opacity-80 transition-opacity"
+                    <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-xl p-2 shadow-2xl overflow-hidden">
+                        <div className="flex items-center justify-center py-3 border-b border-border bg-muted/30">
+                            <span className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Dashboard Preview</span>
+                        </div>
+                        <div className="bg-background rounded-b-xl overflow-hidden aspect-video relative group">
+                            <Image
+                                src="/images/dashboard-preview.png"
+                                alt="Resumistic Dashboard Preview"
+                                fill
+                                className="object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="p-4 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30">
-                                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                                        <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1" />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/0 transition-colors">
+                                <motion.div 
+                                    whileHover={{ scale: 1.1 }}
+                                    className="p-1 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30"
+                                >
+                                    <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/40">
+                                        <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[16px] border-l-white border-b-[10px] border-b-transparent ml-1" />
                                     </div>
-                                </div>
+                                </motion.div>
                             </div>
                         </div>
                     </div>
