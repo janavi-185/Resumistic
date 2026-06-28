@@ -42,7 +42,10 @@ export async function analyzeResume(resumeText: string) {
     // Try to parse as JSON, fallback to raw text if parsing fails
     try {
       // Clean the response text from potential markdown formatting
-      const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+      const cleanedText = text
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
       return JSON.parse(cleanedText);
     } catch (parseError) {
       console.error("Failed to parse Gemini response as JSON:", parseError);

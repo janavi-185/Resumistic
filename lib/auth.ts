@@ -1,7 +1,7 @@
-import NextAuth from "next-auth"
-import Credentials from "next-auth/providers/credentials"
-import { supabase } from "./supabase"
-import bcrypt from "bcryptjs"
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { supabase } from "./supabase";
+import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -12,7 +12,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          return null;
         }
 
         // Fetch user from Supabase
@@ -20,22 +20,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           .from("users")
           .select("*")
           .eq("email", credentials.email)
-          .limit(1)
+          .limit(1);
 
         if (error || !users || users.length === 0) {
-          return null
+          return null;
         }
 
-        const user = users[0]
+        const user = users[0];
 
         // Verify password
         const isValidPassword = await bcrypt.compare(
           credentials.password as string,
-          user.password
-        )
+          user.password,
+        );
 
         if (!isValidPassword) {
-          return null
+          return null;
         }
 
         // Return user object
@@ -43,7 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.username || user.email,
-        }
+        };
       },
     }),
   ],
@@ -53,18 +53,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
+        token.id = user.id;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string
+        session.user.id = token.id as string;
       }
-      return session
+      return session;
     },
   },
   session: {
     strategy: "jwt",
   },
-})
+});

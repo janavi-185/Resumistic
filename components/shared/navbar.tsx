@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
-import { ChevronDown, LogOut, User } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { ChevronDown, LogOut, User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -35,7 +35,7 @@ const Navbar = () => {
             </Link>
 
             {/* Auth Section */}
-            {status === 'loading' ? (
+            {status === "loading" ? (
               <div className="h-9 w-32 animate-pulse bg-muted rounded-lg" />
             ) : session ? (
               // Logged In - Show Username Dropdown
@@ -46,9 +46,11 @@ const Navbar = () => {
                 >
                   <User className="w-4 h-4" />
                   <span className="hidden sm:inline">
-                    {session.user?.name || session.user?.email?.split('@')[0]}
+                    {session.user?.name || session.user?.email?.split("@")[0]}
                   </span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                  />
                 </button>
 
                 {/* Dropdown Menu */}
@@ -90,7 +92,7 @@ const Navbar = () => {
                           <button
                             onClick={() => {
                               setDropdownOpen(false);
-                              signOut({ callbackUrl: '/' });
+                              signOut({ callbackUrl: "/" });
                             }}
                             className="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-lg transition-all duration-200 "
                           >

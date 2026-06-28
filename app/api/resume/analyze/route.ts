@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     if (!file) {
       return NextResponse.json(
         { error: "Resume file is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -24,8 +24,11 @@ export async function POST(req: Request) {
   } catch (error: unknown) {
     console.error("API Error in /api/resume/analyze:", error);
     return NextResponse.json(
-      { error: "Resume analysis failed", details: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
+      {
+        error: "Resume analysis failed",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
     );
   }
 }
