@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { BrainCircuit, LineChart, Layers, ShieldCheck } from 'lucide-react'
+import { LineChart, Layers, ShieldCheck } from 'lucide-react'
 
 const features = [
     {

@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 import { extractTextFromPDF } from "@/lib/resumeParser";
-import { analyzeResume } from "@/lib/gemini";
-import { auth } from "@/lib/auth";
+import { roastResume } from "@/lib/gemini";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const formData = await req.formData();
     const file = formData.get("resume") as File | null;
 
@@ -21,16 +15,16 @@ export async function POST(req: Request) {
     }
 
     const resumeText = await extractTextFromPDF(file);
-    const analysis = await analyzeResume(resumeText);
+    const roast = await roastResume(resumeText);
 
     return NextResponse.json({
       success: true,
-      analysis,
+      roast,
     });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Resume analysis failed" },
+      { error: "Resume roast failed" },
       { status: 500 }
     );
   }

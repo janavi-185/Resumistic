@@ -15,16 +15,19 @@ export async function extractTextFromPDF(file: File): Promise<string> {
     await fs.writeFile(tempFilePath, fileBuffer);
 
     // Initialize PDF parser
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pdfParser = new (PDFParser as any)(null, 1);
 
     // Parse PDF and extract text
     const parsedText = await new Promise<string>((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       pdfParser.on("pdfParser_dataError", (errData: any) => {
         console.error("PDF Parser Error:", errData.parserError);
         reject(new Error(errData.parserError));
       });
 
       pdfParser.on("pdfParser_dataReady", () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const text = (pdfParser as any).getRawTextContent();
         resolve(text);
       });

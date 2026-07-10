@@ -3,7 +3,6 @@
 import React, { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import Sidebar from '@/components/shared/Sidebar'
 import ResumeUpload from '@/components/ui/ResumeUpload'
 import ResumeCreator from '@/components/ui/ResumeCreator'
@@ -11,8 +10,7 @@ import ResumeCreator from '@/components/ui/ResumeCreator'
 const DashboardContent = () => {
     const searchParams = useSearchParams()
     const view = searchParams.get('view') || 'analyze'
-    const { data: session, status } = useSession()
-    const router = useRouter()
+    const { status } = useSession()
 
     if (status === 'loading') {
         return (
@@ -22,10 +20,7 @@ const DashboardContent = () => {
         )
     }
 
-    if (!session) {
-        router.push('/sign-in')
-        return null
-    }
+    // Route protection is handled by middleware.ts
 
     return (
         <div className="flex h-screen overflow-hidden bg-background text-foreground">

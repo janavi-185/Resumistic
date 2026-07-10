@@ -6,10 +6,18 @@ import { Upload, File, X, Sparkles, CheckCircle2 } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
 import { cn } from '@/lib/utils'
 
+interface AnalysisResult {
+    summary?: string;
+    strengths?: string[];
+    improvements?: string[];
+    suggestions?: string[];
+    rating?: number;
+}
+
 const ResumeUpload = () => {
     const [file, setFile] = useState<File | null>(null)
     const [isAnalyzing, setIsAnalyzing] = useState(false)
-    const [analysisResult, setAnalysisResult] = useState<any>(null)
+    const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
     const [error, setError] = useState<string | null>(null)
 
 

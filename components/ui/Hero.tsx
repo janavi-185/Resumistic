@@ -19,7 +19,7 @@ const Hero = () => {
                     transition={{ duration: 8, repeat: Infinity }}
                 />
                 <motion.div
-                    className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px]"
+                    className="absolute bottom-1/4 right-1/4 w-125 h-125 bg-primary/10 rounded-full blur-[150px]"
                     animate={{
                         scale: [1.2, 1, 1.2],
                         opacity: [0.2, 0.4, 0.2],
@@ -79,6 +79,7 @@ const Hero = () => {
                 >
                     <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-2 shadow-2xl">
                         <div className="bg-background rounded-xl overflow-hidden aspect-video relative group">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src="https://images.unsplash.com/photo-1517245385169-d39139a4603c?auto=format&fit=crop&q=80&w=2070"
                                 alt="Dashboard Preview"

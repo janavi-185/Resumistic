@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 import { extractTextFromPDF } from "@/lib/resumeParser";
 import { analyzeResume } from "@/lib/gemini";
-import { auth } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const formData = await req.formData();
     const file = formData.get("resume") as File | null;
 

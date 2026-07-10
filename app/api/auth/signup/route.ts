@@ -2,13 +2,20 @@ import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import bcrypt from "bcryptjs"
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
 export async function POST(request: Request) {
   try {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json(
+        { error: "Server Configuration Error: Missing SUPABASE_SERVICE_ROLE_KEY" },
+        { status: 500 }
+      )
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
     const { email, password, username } = await request.json()
 
     // Validate input
@@ -52,7 +59,7 @@ export async function POST(request: Request) {
     if (error) {
       console.error("Supabase error:", error)
       return NextResponse.json(
-        { error: "Failed to create user" },
+        { error: "Failed to create user", details: error },
         { status: 500 }
       )
     }

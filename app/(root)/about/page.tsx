@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+// import React from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles, ShieldCheck, Zap, Heart } from 'lucide-react'
 import Navbar from '@/components/shared/navbar'

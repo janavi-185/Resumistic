@@ -45,8 +45,8 @@ const SignInPage = () => {
                 router.push('/dashboard')
                 router.refresh()
             }
-        } catch (err: any) {
-            setError(err.message || 'Sign in failed')
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Sign in failed')
         } finally {
             setLoading(false)
         }
@@ -160,7 +160,7 @@ const SignInPage = () => {
                     transition={{ duration: 0.5 }}
                     >
                         <p className="text-muted-foreground">
-                            Don't have an account?{' '}
+                            Don&apos;t have an account?{' '}
                             <Link
                                 href="/sign-up"
                                 className="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
