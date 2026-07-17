@@ -4,9 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-interface ProtectedRouteProps {
-  children: React.ReactNode
-}
+import { ProtectedRouteProps } from '@/types'
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { data: session, status } = useSession()

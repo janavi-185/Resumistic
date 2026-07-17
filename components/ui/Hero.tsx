@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import Link from 'next/link'
@@ -12,7 +11,7 @@ const Hero = () => {
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                 <motion.div
                     className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px]"
-                    animate={{
+                    animate={{ 
                         scale: [1, 1.2, 1],
                         opacity: [0.3, 0.5, 0.3],
                     }}

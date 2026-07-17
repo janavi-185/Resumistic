@@ -7,20 +7,7 @@ import { useDropzone } from 'react-dropzone'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
-interface AnalysisResult {
-    summary?: string;
-    strengths?: string[];
-    improvements?: string[];
-    suggestions?: string[];
-    rating?: number;
-}
-
-interface RoastResult {
-    roast?: string;
-    redFlags?: string[];
-    harshTruth?: string;
-    score?: number;
-}
+import { AnalysisResult, RoastResult } from '@/types'
 
 const TrialResumeUpload = () => {
     const [file, setFile] = useState<File | null>(null)

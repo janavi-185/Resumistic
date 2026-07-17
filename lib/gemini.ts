@@ -3,28 +3,22 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 // Initialize the Gemini API client
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-/**
- * Analyzes a resume using Google's Gemini AI
- * @param resumeText - The extracted text from the resume
- * @returns Analysis results from Gemini
- */
-export async function analyzeResume(resumeText: string) {
+export async function analyzeResume(resumeText: string, jdText?: string) {
   try {
-    // Get the generative model (using gemini-1.5-flash as gemini-pro is deprecated)
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-    // Create a prompt for resume analysis
     const prompt = `
-      Analyze the following resume and provide a detailed assessment:
+      Analyze the following resume and provide a detailed assessment.
+      ${jdText ? `Also, evaluate how well this resume matches the following Job Description (JD):\nJob Description:\n${jdText}\n` : ''}
 
+      Resume Text:
       ${resumeText}
 
       Please provide:
-      1. Overall summary of the candidate's profile
+      1. Overall summary of the candidate's profile${jdText ? ' and their fit for the JD' : ''}
       2. Key strengths and skills
-      3. Areas for improvement
+      3. Areas for improvement${jdText ? ' to better match the JD' : ''}
       4. Suggestions for enhancing the resume
-      5. A rating out of 10 for the resume quality
+      5. A rating out of 10 for the resume quality${jdText ? ' and fit for the role' : ''}
 
       Format your response as a structured JSON object with the following keys:
       - summary: string
@@ -34,18 +28,13 @@ export async function analyzeResume(resumeText: string) {
       - rating: number
     `;
 
-    // Generate content
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
 
-    // Try to parse as JSON, fallback to raw text if parsing fails
     try {
-      // Remove potential markdown formatting (```json ... ```)
       const cleanText = text.replace(/```json\n?|\n?```/gi, '').trim();
       const parsed = JSON.parse(cleanText);
-      
-      // Enforce the schema types to prevent frontend mapping errors
       return {
         summary: parsed.summary || "",
         strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
@@ -68,20 +57,16 @@ export async function analyzeResume(resumeText: string) {
   }
 }
 
-/**
- * Roasts a resume using Google's Gemini AI
- * @param resumeText - The extracted text from the resume
- * @returns Roast results from Gemini
- */
-export async function roastResume(resumeText: string) {
+export async function roastResume(resumeText: string, jdText?: string) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
     const prompt = `
       You are a brutally honest, sarcastic, and funny tech recruiter. 
       Roast the following resume. Don't hold back, but keep it professional enough to not be offensive (no swearing).
       Point out clichés, bad formatting choices, weak bullet points, and funny exaggerations.
+      ${jdText ? `Also roast them on how badly they fit this Job Description:\nJob Description:\n${jdText}\n` : ''}
 
+      Resume Text:
       ${resumeText}
 
       Format your response as a structured JSON object with the following keys:
@@ -116,5 +101,45 @@ export async function roastResume(resumeText: string) {
   } catch (error) {
     console.error("Error roasting resume with Gemini:", error);
     throw new Error("Failed to roast resume");
+  }
+}
+
+export async function getATSScore(resumeText: string, jdText?: string) {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const prompt = `
+      You are an strict ATS (Applicant Tracking System).
+      Calculate an ATS compatibility score (0-100) for the following resume.
+      ${jdText ? `Compare the resume specifically against this Job Description:\nJob Description:\n${jdText}\n` : 'Evaluate the resume based on general industry standards, keyword optimization, and formatting clarity.'}
+
+      Resume Text:
+      ${resumeText}
+
+      Format your response as a structured JSON object with the following keys:
+      - atsScore: number (0-100)
+      - feedback: string (A concise explanation of the score and what the ATS found or missed)
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    try {
+      const cleanText = text.replace(/```json\n?|\n?```/gi, '').trim();
+      const parsed = JSON.parse(cleanText);
+      
+      return {
+        atsScore: typeof parsed.atsScore === 'number' ? parsed.atsScore : parseInt(parsed.atsScore) || 0,
+        feedback: parsed.feedback || "",
+      };
+    } catch {
+      return {
+        atsScore: 0,
+        feedback: "Failed to parse ATS score. Resume format might be completely unreadable to an ATS.",
+      };
+    }
+  } catch (error) {
+    console.error("Error calculating ATS score with Gemini:", error);
+    throw new Error("Failed to calculate ATS score");
   }
 }

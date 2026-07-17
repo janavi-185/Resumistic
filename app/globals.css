@@ -53,7 +53,7 @@ button:hover, button:focus {
   --font-sans: Outfit, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
-  --radius: 0.5rem;
+  --radius: 0.2rem;
   --shadow-x: 0px;
   --shadow-y: 1px;
   --shadow-blur: 3px;
@@ -108,7 +108,7 @@ button:hover, button:focus {
   --font-sans: Outfit, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
-  --radius: 0.5rem;
+  --radius: 0.2rem;
   --shadow-x: 0px;
   --shadow-y: 1px;
   --shadow-blur: 3px;
