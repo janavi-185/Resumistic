@@ -31,3 +31,17 @@ export interface RoastResult {
 export interface ProtectedRouteProps {
     children: React.ReactNode;
 }
+
+export interface AnalysisResultsProps {
+    analysisResult: AnalysisResult | null;
+    resultType: 'ats' | 'full' | 'roast' | null;
+    chatId?: string | null;
+    file?: File | null;
+}
+
+export interface ConfirmDeleteDialogProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    isDeleting: boolean;
+}

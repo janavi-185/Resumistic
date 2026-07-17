@@ -70,7 +70,8 @@ const Sidebar = () => {
                 if (res.ok) {
                     const data = await res.json()
                     if (data.success) {
-                        setHistoryItems(data.analyses)
+                        const sorted = [...data.analyses].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                        setHistoryItems(sorted)
                     }
                 }
             } catch (error) {
@@ -124,7 +125,7 @@ const Sidebar = () => {
             {/* Sidebar Shell */}
             <aside 
                 className={cn(
-                    "fixed inset-y-0 left-0 bg-card border-r border-border z-50 transition-transform duration-300 lg:translate-x-0 lg:static shrink-0 relative",
+                    "inset-y-0 left-0 bg-card border-r border-border z-50 transition-transform duration-300 lg:translate-x-0 lg:static shrink-0 relative",
                     isOpen ? "translate-x-0" : "-translate-x-full",
                     isResizing && "transition-none select-none"
                 )}
@@ -261,10 +262,10 @@ const Sidebar = () => {
 
                 {/* Resize Handle */}
                 <div 
-                    className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/50 flex items-center justify-center z-50 group transition-colors hidden lg:flex"
+                    className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/50 items-center justify-center z-50 group transition-colors hidden lg:flex"
                     onMouseDown={startResizing}
                 >
-                    <div className="absolute right-[-10px] w-6 h-full flex items-center justify-center">
+                    <div className="absolute -right-2.5 w-6 h-full flex items-center justify-center">
                         <GripVertical className="w-4 h-4 text-border group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100" />
                     </div>
                 </div>

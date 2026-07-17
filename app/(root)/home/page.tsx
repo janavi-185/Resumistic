@@ -1,11 +1,11 @@
 'use client'
 
-import Hero from '@/components/ui/Hero'
-import Features from '@/components/ui/Features'
-import HowItWorks from '@/components/ui/HowItWorks'
-import CTA from '@/components/ui/CTA'
+import Hero from '@/components/home/Hero'
+import Features from '@/components/home/Features'
+import HowItWorks from '@/components/home/HowItWorks'
+import CTA from '@/components/home/CTA'
 import Navbar from '@/components/shared/navbar'
-import TrialResumeUpload from '@/components/ui/TrialResumeUpload'
+import TrialResumeUpload from '@/components/home/TrialResumeUpload'
 
 const Home = () => {
     return (

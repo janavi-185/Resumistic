@@ -66,8 +66,8 @@ const Navbar = () => {
                       /> */}
                       {/* Dropdown */}
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
                         className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-background shadow-xl z-20 overflow-hidden"
@@ -116,7 +116,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   href="/sign-up"
-                  className="px-5 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-all duration-200 hover:shadow-md hover:scale-105"
+                  className="px-5 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/80 rounded-lg transition-all duration-200 hover:shadow-md"
                 >
                   Sign Up
                 </Link>

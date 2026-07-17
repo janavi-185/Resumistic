@@ -109,8 +109,9 @@ const TrialResumeUpload = () => {
         <div className="max-w-4xl mx-auto py-12 px-4">
             <div className="text-center mb-12">
                 <motion.h1 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
                     className="text-3xl md:text-4xl font-bold mb-4"
                 >
                     Try it out for <span className="text-primary">Free</span>
@@ -132,15 +133,15 @@ const TrialResumeUpload = () => {
                 <div
                     {...getRootProps()}
                     className={cn(
-                        "group relative border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-300",
-                        isDragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:border-primary/50 hover:bg-primary/2"
+                        "group relative border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300",
+                        isDragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-primary/5"
                     )}
                 >
                     <input {...getInputProps()} />
                     <div className="flex flex-col items-center">
                         <div className={cn(
-                            "w-20 h-20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110",
-                            isDragActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                            "w-20 h-20 rounded-2xl flex items-center justify-center mb-6 transition-colors",
+                            isDragActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                         )}>
                             <Upload className="w-10 h-10" />
                         </div>
@@ -159,8 +160,9 @@ const TrialResumeUpload = () => {
                 </div>
             ) : (
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
                     className="border border-border bg-card rounded-3xl p-8 shadow-xl"
                 >
                     <div className="flex items-center justify-between p-6 rounded-2xl bg-muted/50 border border-border mb-8">
@@ -231,8 +233,9 @@ const TrialResumeUpload = () => {
                         {/* ANALYSIS RESULT  */}
                         {analysisResult && (
                             <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 1 }}
                                 className="mt-8 col-span-1 md:col-span-2 p-6 rounded-2xl border border-border bg-muted/40"
                             >
                                 <h3 className="text-lg font-semibold mb-4 text-primary">AI Resume Analysis</h3>
@@ -289,8 +292,9 @@ const TrialResumeUpload = () => {
                         {/* ROAST RESULT */}
                         {roastResult && (
                             <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 1 }}
                                 className="mt-8 col-span-1 md:col-span-2 p-6 rounded-2xl border border-destructive/20 bg-destructive/5"
                             >
                                 <div className="flex items-center gap-2 mb-4">

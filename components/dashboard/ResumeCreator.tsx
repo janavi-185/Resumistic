@@ -15,23 +15,7 @@ import Link from 'next/link'
 import { useDropzone } from 'react-dropzone'
 import { cn } from '@/lib/utils'
 
-const suggestedTemplates = [
-    {
-        title: "Software Engineer",
-        description: "Focus on React, Node.js, and Cloud Infrastructure.",
-        fullJD: "We are looking for a Software Engineer to develop, test, and maintain high-quality software applications. \n\nKey Responsibilities:\n- Collaborate with cross-functional teams to define and ship new features.\n- Write clean, maintainable, and efficient code.\n- Participate in code reviews and contribute to architectural decisions.\n\nRequirements:\n- Strong experience with React, TypeScript, and Node.js.\n- Familiarity with cloud infrastructure (AWS/Azure/GCP).\n- Excellent problem-solving skills."
-    },
-    {
-        title: "Product Designer",
-        description: "Focus on UI/UX, Figma, and User Research.",
-        fullJD: "We are seeking a Product Designer to create intuitive user experiences and beautiful visual designs. \n\nKey Responsibilities:\n- Design user flows, wireframes, and high-fidelity mockups.\n- Conduct user research and usability testing.\n- Work closely with engineering to ensure design fidelity.\n\nRequirements:\n- Proficiency in Figma and Adobe Creative Suite.\n- Strong portfolio demonstrating UI/UX best practices.\n- Experience with design systems."
-    },
-    {
-        title: "Data Analyst",
-        description: "Focus on Python, SQL, and Statistical Modeling.",
-        fullJD: "We are hiring a Data Analyst to interpret complex data sets and help drive business decisions. \n\nKey Responsibilities:\n- Extract and clean data from various sources (SQL, APIs).\n- Perform statistical analysis and create visualizations.\n- Present insights to stakeholders to guide strategy.\n\nRequirements:\n- Advanced SQL skills and proficiency in Python or R.\n- Experience with BI tools like Tableau or PowerBI.\n- Strong analytical and communication skills."
-    }
-]
+import { suggestedTemplates } from '@/constants'
 
 const ResumeCreator = () => {
     const [jobDescription, setJobDescription] = useState('')
@@ -97,18 +81,16 @@ const ResumeCreator = () => {
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
                         {suggestedTemplates.map((template) => (
-                            <motion.button
+                            <button
                                 key={template.title}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
                                 onClick={() => handleTemplateClick(template.fullJD)}
-                                className="p-5 rounded-2xl border border-border bg-card hover:border-primary/50 text-left transition-all group"
+                                className="p-5 rounded-xl border border-border bg-card hover:bg-primary/5 hover:border-primary/50 text-left transition-all group"
                             >
                                 <h3 className="font-bold mb-2 group-hover:text-primary transition-colors">{template.title}</h3>
                                 <p className="text-xs text-muted-foreground leading-relaxed">
                                     {template.description}
                                 </p>
-                            </motion.button>
+                            </button>
                         ))}
                     </div>
                 </div>
@@ -124,7 +106,7 @@ const ResumeCreator = () => {
                         <textarea 
                             value={jobDescription}
                             onChange={(e) => setJobDescription(e.target.value)}
-                            className="w-full h-80 bg-muted/30 border border-border rounded-3xl p-6 focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none text-foreground placeholder:text-muted-foreground/50"
+                            className="w-full h-80 bg-muted/30 border border-border rounded-xl p-6 focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none text-foreground placeholder:text-muted-foreground/50"
                             placeholder="Paste the job description here or click a template on the left to auto-fill..."
                         />
                     </div>
@@ -139,7 +121,7 @@ const ResumeCreator = () => {
                         <div 
                             {...getRootProps()} 
                             className={cn(
-                                "border-2 border-dashed rounded-3xl p-6 text-center cursor-pointer transition-all",
+                                "border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all",
                                 isDragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
                             )}
                         >
@@ -154,16 +136,18 @@ const ResumeCreator = () => {
                         <AnimatePresence>
                             {attachments.length > 0 && (
                                 <motion.div 
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 1 }}
                                     className="flex flex-wrap gap-3 mt-4"
                                 >
                                     {attachments.map((file, index) => (
                                         <motion.div
                                             key={index}
-                                            initial={{ scale: 0.9 }}
-                                            animate={{ scale: 1 }}
-                                            exit={{ scale: 0.9, opacity: 0 }}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 1 }}
                                             className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-primary"
                                         >
                                             <span className="truncate max-w-[150px]">{file.name}</span>
@@ -181,7 +165,7 @@ const ResumeCreator = () => {
                     <button
                         onClick={handleGenerate}
                         disabled={!jobDescription || isGenerating}
-                        className="w-full py-5 rounded-3xl bg-primary text-primary-foreground font-bold text-xl shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
+                        className="w-full py-5 rounded-xl bg-primary text-primary-foreground font-bold text-xl shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
                     >
                         {isGenerating ? (
                             <>

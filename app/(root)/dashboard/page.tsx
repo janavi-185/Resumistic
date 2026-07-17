@@ -4,8 +4,8 @@ import React, { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Sidebar from '@/components/shared/Sidebar'
-import ResumeUpload from '@/components/ui/ResumeUpload'
-import ResumeCreator from '@/components/ui/ResumeCreator'
+import ResumeUpload from '@/components/dashboard/ResumeUpload'
+import ResumeCreator from '@/components/dashboard/ResumeCreator'
 
 const DashboardContent = () => {
     const searchParams = useSearchParams()

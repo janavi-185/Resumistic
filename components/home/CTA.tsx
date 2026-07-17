@@ -28,23 +28,19 @@ const CTA = () => {
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link href="/sign-up">
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="px-8 py-4 rounded-xl bg-white text-primary font-bold text-lg shadow-xl flex items-center gap-2 group transition-all"
+                                <button
+                                    className="px-8 py-4 rounded-xl bg-white hover:bg-gray-100 text-primary font-bold text-lg shadow-xl flex items-center gap-2 group transition-all"
                                 >
                                     Start Analyzing Now
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </motion.button>
+                                </button>
                             </Link>
                             <Link href="/about">
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="px-8 py-4 rounded-xl bg-primary-foreground/10 text-primary-foreground font-semibold text-lg border border-primary-foreground/20 transition-all backdrop-blur-sm"
+                                <button
+                                    className="px-8 py-4 rounded-xl bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground font-semibold text-lg border border-primary-foreground/20 transition-all backdrop-blur-sm"
                                 >
                                     Learn More
-                                </motion.button>
+                                </button>
                             </Link>
                         </div>
                     </div>

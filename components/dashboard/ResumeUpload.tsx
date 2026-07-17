@@ -2,12 +2,14 @@
 
 import React, { useState, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Upload, File, X, Sparkles, CheckCircle2, FileText, BarChart, Flame, ArrowLeft } from 'lucide-react'
+import { Upload, File, X, Sparkles, CheckCircle2, FileText, BarChart, Flame, ArrowLeft, Trash2, Loader2 } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
 import { cn } from '@/lib/utils'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 import { AnalysisResult } from '@/types'
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
+import { AnalysisResults } from './AnalysisResults'
 
 const ResumeUpload = () => {
     const [file, setFile] = useState<File | null>(null)
@@ -20,6 +22,8 @@ const ResumeUpload = () => {
     const [resultType, setResultType] = useState<'ats' | 'full' | 'roast' | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [isLoadingHistory, setIsLoadingHistory] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
     const searchParams = useSearchParams()
     const router = useRouter()
@@ -54,7 +58,7 @@ const ResumeUpload = () => {
                     } else {
                         setError("Failed to load historical chat.")
                     }
-                } catch (e) {
+                } catch {
                     setError("Error loading chat.")
                 } finally {
                     setIsLoadingHistory(false)
@@ -69,6 +73,7 @@ const ResumeUpload = () => {
                 setError(null)
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chatId]) // deliberately ignoring file dependency
 
     useEffect(() => {
@@ -148,10 +153,31 @@ const ResumeUpload = () => {
         }
     }
 
+    const handleDeleteChat = async () => {
+        if (!chatId) return
+
+        setIsDeleting(true)
+        try {
+            const res = await fetch(`/api/resume/history/${chatId}`, {
+                method: "DELETE"
+            })
+            if (res.ok) {
+                window.dispatchEvent(new Event('history-updated'))
+                router.push('/dashboard')
+            } else {
+                setError("Failed to delete history.")
+            }
+        } catch (err) {
+            console.error(err)
+            setError("Something went wrong while deleting.")
+        } finally {
+            setIsDeleting(false)
+            setIsDeleteDialogOpen(false)
+        }
+    }
 
     return (
-        <div className={cn("mx-auto py-12 px-4 transition-all duration-500", (file || chatId) ? "max-w-7xl" : "max-w-4xl")}>
-            {(!file && !chatId) && (
+        <div className={cn("mx-auto py-12", (file || chatId) ? "max-w-360 px-8 lg:px-16" : "max-w-4xl px-4")}>
                 <div className="text-center mb-12">
                     <motion.h1 
                         initial={{ opacity: 0, y: 20 }}
@@ -164,7 +190,6 @@ const ResumeUpload = () => {
                         Upload your resume and get a professional analysis in seconds.
                     </p>
                 </div>
-            )}
 
             {isLoadingHistory && (
                 <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
@@ -177,15 +202,15 @@ const ResumeUpload = () => {
                 <div
                     {...getRootProps()}
                     className={cn(
-                        "group relative border-2 border-dashed rounded p-12 text-center cursor-pointer transition-all duration-300",
-                        isDragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:border-primary/50 hover:bg-primary/2"
+                        "group relative border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300",
+                        isDragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-primary/5"
                     )}
                 >
                     <input {...getInputProps()} />
                     <div className="flex flex-col items-center">
                         <div className={cn(
-                            "w-20 h-20 rounded flex items-center justify-center mb-6 transition-transform group-hover:scale-110",
-                            isDragActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                            "w-20 h-20 rounded-xl flex items-center justify-center mb-6 transition-colors",
+                            isDragActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                         )}>
                             <Upload className="w-10 h-10" />
                         </div>
@@ -196,9 +221,9 @@ const ResumeUpload = () => {
                             or click to browse from your computer
                         </p>
                         <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground uppercase tracking-widest">
-                            <span className="px-3 py-1 rounded border border-border">PDF</span>
-                            <span className="px-3 py-1 rounded border border-border">DOCX</span>
-                            <span className="px-3 py-1 rounded border border-border">UP TO 10MB</span>
+                            <span className="px-3 py-1 rounded-md border border-border">PDF</span>
+                            <span className="px-3 py-1 rounded-md border border-border">DOCX</span>
+                            <span className="px-3 py-1 rounded-md border border-border">UP TO 10MB</span>
                         </div>
                     </div>
                 </div>
@@ -212,12 +237,12 @@ const ResumeUpload = () => {
                 >
                     {/* Left Column: Resume Preview (Only for new uploads) */}
                     {file && (
-                        <div className="hidden lg:flex lg:col-span-2 flex-col h-[500px] sticky top-8 border border-border rounded overflow-hidden">
+                        <div className="hidden lg:flex lg:col-span-2 flex-col h-125 sticky top-8 border border-border rounded-xl overflow-hidden">
                             <div className="p-3 border-b border-border bg-muted/30 flex justify-between items-center shrink-0">
                                 <span className="font-semibold flex items-center gap-2 text-sm">
                                     <File className="w-4 h-4 text-primary"/> Preview
                                 </span>
-                                <span className="text-xs text-muted-foreground truncate max-w-[150px]" title={file.name}>
+                                <span className="text-xs text-muted-foreground truncate max-w-37.5" title={file.name}>
                                     {file.name}
                                 </span>
                             </div>
@@ -246,6 +271,14 @@ const ResumeUpload = () => {
                                 >
                                     <ArrowLeft className="w-4 h-4" /> Back to Upload
                                 </button>
+                                <button
+                                    onClick={() => setIsDeleteDialogOpen(true)}
+                                    disabled={isDeleting}
+                                    className="text-sm font-medium text-destructive hover:text-destructive/80 flex items-center gap-2 transition-colors disabled:opacity-50"
+                                >
+                                    {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                    Delete Chat
+                                </button>
                             </div>
                         )}
 
@@ -263,8 +296,8 @@ const ResumeUpload = () => {
                                 </div>
                                 
                                 {/* Mobile file info (since preview is hidden on mobile) */}
-                                <div className="lg:hidden flex items-center gap-4 p-4 rounded bg-muted/50 border border-border mb-6">
-                                    <div className="p-3 rounded bg-primary/10 text-primary shrink-0">
+                                <div className="lg:hidden flex items-center gap-4 p-4 rounded-xl bg-muted/50 border border-border mb-6">
+                                    <div className="p-3 rounded-lg bg-primary/10 text-primary shrink-0">
                                         <File className="w-6 h-6" />
                                     </div>
                                     <div className="min-w-0 flex-1">
@@ -279,7 +312,7 @@ const ResumeUpload = () => {
                                         <button
                                             onClick={() => setAnalysisMode('detailed')}
                                             className={cn(
-                                                "flex flex-col items-center justify-center p-4 rounded border-2 transition-all gap-2",
+                                                "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2",
                                                 analysisMode === 'detailed' 
                                                     ? "border-primary bg-primary/5 text-primary" 
                                                     : "border-border hover:border-primary/50 text-muted-foreground"
@@ -291,7 +324,7 @@ const ResumeUpload = () => {
                                         <button
                                             onClick={() => setAnalysisMode('ats')}
                                             className={cn(
-                                                "flex flex-col items-center justify-center p-4 rounded border-2 transition-all gap-2",
+                                                "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2",
                                                 analysisMode === 'ats' 
                                                     ? "border-primary bg-primary/5 text-primary" 
                                                     : "border-border hover:border-primary/50 text-muted-foreground"
@@ -308,6 +341,7 @@ const ResumeUpload = () => {
                                     <motion.div 
                                         initial={{ opacity: 0, height: 0 }} 
                                         animate={{ opacity: 1, height: 'auto' }} 
+                                        transition={{ duration: 0.3 }}
                                         className="mb-6 overflow-hidden"
                                     >
                                         <label className="block text-sm font-medium mb-2">Job Description (Optional)</label>
@@ -315,7 +349,7 @@ const ResumeUpload = () => {
                                             value={jdText}
                                             onChange={(e) => setJdText(e.target.value)}
                                             placeholder="Paste the job description here to get tailored feedback..."
-                                            className="w-full h-32 p-4 rounded border border-border bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all custom-scrollbar text-sm"
+                                            className="w-full h-32 p-4 rounded-xl border border-border bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all custom-scrollbar text-sm"
                                         />
                                     </motion.div>
                                 )}
@@ -323,7 +357,7 @@ const ResumeUpload = () => {
                                 <button
                                     disabled={isAnalyzing}
                                     onClick={handleAnalyze}
-                                    className="w-full py-4 rounded bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 overflow-hidden relative"
+                                    className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 overflow-hidden relative"
                                 >
                                     {isAnalyzing ? (
                                         <>
@@ -339,7 +373,7 @@ const ResumeUpload = () => {
                                     )}
                                 </button>
                                 {error && !chatId && (
-                                    <p className="mt-4 text-sm font-medium text-destructive text-center p-3 rounded bg-destructive/10">
+                                    <p className="mt-4 text-sm font-medium text-destructive text-center p-3 rounded-lg bg-destructive/10">
                                         {error}
                                     </p>
                                 )}
@@ -347,130 +381,18 @@ const ResumeUpload = () => {
                         )}
 
                         {error && chatId && (
-                            <div className="p-6 bg-destructive/10 border border-destructive/20 text-destructive rounded">
+                            <div className="p-6 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl">
                                 {error}
                             </div>
                         )}
 
                         {/* ANALYSIS RESULT */}
-                        {analysisResult && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className={cn("pt-8", file ? "border-t border-border" : "")}
-                            >
-                                <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-                                    {resultType === 'ats' ? <BarChart className="w-6 h-6 text-primary" /> : 
-                                     resultType === 'roast' ? <Flame className="w-6 h-6 text-destructive" /> : 
-                                     <FileText className="w-6 h-6 text-primary" />}
-                                    {resultType === 'ats' ? 'ATS Evaluation' : resultType === 'roast' ? 'Resume Roast' : 'AI Analysis'}
-                                    {chatId && <span className="text-xs font-medium bg-muted text-muted-foreground px-2 py-1 rounded ml-2">Historical</span>}
-                                </h3>
-                                
-                                {resultType === 'ats' && (
-                                    <div className="space-y-6">
-                                        <div className="flex flex-col items-center justify-center p-8 rounded border border-primary/20 bg-primary/5">
-                                            <div className="relative">
-                                                <svg className="w-32 h-32 transform -rotate-90">
-                                                    <circle cx="64" cy="64" r="60" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-muted" />
-                                                    <circle cx="64" cy="64" r="60" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={377} strokeDashoffset={377 - (377 * (analysisResult.atsScore || 0)) / 100} className="text-primary transition-all duration-1000 ease-out" />
-                                                </svg>
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <span className="text-4xl font-bold text-primary">{analysisResult.atsScore}</span>
-                                                </div>
-                                            </div>
-                                            <p className="mt-4 font-medium text-lg">ATS Compatibility Score</p>
-                                        </div>
-                                        <div className="p-4 rounded border border-border bg-muted/20">
-                                            <h4 className="font-semibold mb-2">Feedback</h4>
-                                            <p className="text-muted-foreground">{analysisResult.feedback}</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {resultType === 'full' && (
-                                    <div className="space-y-6">
-                                        {analysisResult.rating && (
-                                            <div className="p-4 rounded border border-primary/20 bg-primary/5 flex items-center justify-between">
-                                                <p className="font-medium text-muted-foreground">Overall Rating</p>
-                                                <p className="text-3xl font-bold text-primary">{analysisResult.rating}/10</p>
-                                            </div>
-                                        )}
-
-                                        {analysisResult.summary && (
-                                            <div>
-                                                <h4 className="font-semibold mb-2 text-primary">Summary</h4>
-                                                <p className="text-sm text-muted-foreground leading-relaxed">{analysisResult.summary}</p>
-                                            </div>
-                                        )}
-
-                                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                                            {analysisResult.strengths && analysisResult.strengths.length > 0 && (
-                                                <div className="p-4 rounded border border-green-500/20 bg-green-500/5">
-                                                    <h4 className="font-semibold mb-3 text-green-600 dark:text-green-400">Key Strengths</h4>
-                                                    <ul className="list-disc list-inside space-y-2">
-                                                        {analysisResult.strengths.map((strength: string, idx: number) => (
-                                                            <li key={idx} className="text-sm text-muted-foreground">{strength}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-
-                                            {analysisResult.improvements && analysisResult.improvements.length > 0 && (
-                                                <div className="p-4 rounded border border-orange-500/20 bg-orange-500/5">
-                                                    <h4 className="font-semibold mb-3 text-orange-600 dark:text-orange-400">Areas for Improvement</h4>
-                                                    <ul className="list-disc list-inside space-y-2">
-                                                        {analysisResult.improvements.map((improvement: string, idx: number) => (
-                                                            <li key={idx} className="text-sm text-muted-foreground">{improvement}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {analysisResult.suggestions && analysisResult.suggestions.length > 0 && (
-                                            <div className="p-4 rounded border border-border bg-muted/20">
-                                                <h4 className="font-semibold mb-3 text-primary">Actionable Suggestions</h4>
-                                                <ul className="list-disc list-inside space-y-2">
-                                                    {analysisResult.suggestions.map((suggestion: string, idx: number) => (
-                                                        <li key={idx} className="text-sm text-muted-foreground">{suggestion}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {resultType === 'roast' && (
-                                    <div className="space-y-6">
-                                        <div className="p-6 rounded border border-destructive/20 bg-destructive/10 text-center">
-                                            <h4 className="text-xl font-bold text-destructive mb-2">Brutal Score</h4>
-                                            <p className="text-5xl font-black text-destructive mb-4">{analysisResult.score}/10</p>
-                                            <p className="font-bold text-foreground italic">&quot;{analysisResult.harshTruth}&quot;</p>
-                                        </div>
-                                        
-                                        <div className="p-4 rounded border border-border bg-muted/20">
-                                            <h4 className="font-bold text-lg mb-2 flex items-center gap-2"><Flame className="w-5 h-5 text-destructive" /> The Roast</h4>
-                                            <p className="text-muted-foreground leading-relaxed">{analysisResult.roast}</p>
-                                        </div>
-
-                                        {analysisResult.redFlags && analysisResult.redFlags.length > 0 && (
-                                            <div className="p-4 rounded border border-red-500/20 bg-red-500/5">
-                                                <h4 className="font-bold mb-3 text-red-600 dark:text-red-400">Major Red Flags 🚩</h4>
-                                                <ul className="space-y-3">
-                                                    {analysisResult.redFlags.map((flag: string, idx: number) => (
-                                                        <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
-                                                            <span className="mt-0.5">💀</span>
-                                                            <span>{flag}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </motion.div>
-                        )}
+                        <AnalysisResults 
+                            analysisResult={analysisResult} 
+                            resultType={resultType} 
+                            chatId={chatId} 
+                            file={file} 
+                        />
                     </div>
                 </motion.div>
             )}
@@ -479,19 +401,26 @@ const ResumeUpload = () => {
             {!file && !chatId && !isLoadingHistory && (
                 <div className="mt-12 flex flex-wrap items-center justify-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
                     <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded bg-primary" />
+                        <div className="w-2 h-2 rounded-full bg-primary" />
                         <span className="text-sm font-medium">ATS Approved</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded bg-blue-500" />
+                        <div className="w-2 h-2 rounded-full bg-blue-500" />
                         <span className="text-sm font-medium">Industry Standard</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded bg-purple-500" />
+                        <div className="w-2 h-2 rounded-full bg-purple-500" />
                         <span className="text-sm font-medium">Privacy Guaranteed</span>
                     </div>
                 </div>
             )}
+
+            <ConfirmDeleteDialog 
+                isOpen={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                onConfirm={handleDeleteChat}
+                isDeleting={isDeleting}
+            />
         </div>
     )
 }

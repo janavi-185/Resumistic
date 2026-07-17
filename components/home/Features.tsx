@@ -31,9 +31,9 @@ const Features = () => {
             <div className="container mx-auto">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
                         className="text-4xl md:text-5xl font-bold mb-6"
                     >
                         Features built for your <span className="text-primary">success</span>
@@ -47,10 +47,10 @@ const Features = () => {
                     {features.map((feature, index) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 1, delay: (features.length - 1 - index) * 0.1 }}
                             whileHover={{ y: -5 }}
                             className="p-8 rounded-2xl border border-border bg-background shadow-sm hover:shadow-md transition-all"
                         >
